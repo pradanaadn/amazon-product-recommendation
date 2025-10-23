@@ -16,7 +16,7 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
-      - ./src:/opt/spark/work-dir
+      - synced-src:/opt/spark/work-dir
     networks:
       - spark-network
 
@@ -36,7 +36,7 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
-      - ./src:/opt/spark/work-dir
+      - synced-src:/opt/spark/work-dir
     depends_on:
       - spark-master
     networks:
@@ -58,7 +58,7 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
-      - ./src:/opt/spark/work-dir
+      - synced-src:/opt/spark/work-dir
     depends_on:
       - spark-master
     networks:
@@ -76,9 +76,28 @@ services:
     networks:
       - spark-network
     volumes:
-      - ./src:/app/src
-      - ./notebooks:/app/notebooks 
+      - synced-src:/app/src
+      - ./notebooks:/app/notebooks
+
+  syncthing:
+    image: syncthing/syncthing:latest
+    container_name: syncthing
+    restart: unless-stopped
+    ports:
+      - "8384:8384"       # Syncthing Web GUI
+      - "22000:22000"     # Syncthing sync protocol
+      - "21027:21027/udp" # Local discovery
+    volumes:
+      - ./syncthing/config:/var/syncthing/config
+      - synced-src:/var/syncthing/data
+      - ./src:/host-src:ro
+    networks:
+      - spark-network
 
 networks:
   spark-network:
     driver: bridge
+
+volumes:
+  synced-src:
+    driver: local
