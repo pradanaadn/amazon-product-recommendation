@@ -13,7 +13,7 @@ ENV PATH="$JAVA_HOME/bin:$PATH"
 
 WORKDIR /app
 
-COPY pyproject.toml .
+COPY pyproject.toml uv.lock* ./
 RUN uv sync
 
 COPY src/ ./src/

@@ -10,13 +10,17 @@ services:
       - SPARK_MASTER_WEBUI_PORT=8080
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     ports:
-      - "8080:8080"  # Spark Master Web UI
-      - "7077:7077"  # Spark Master Port
-      - "4040:4040"  # Spark Application UI
+      - "8080:8080" 
+      - "7077:7077"  
+      - "4040:4040"  
     volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
-      - synced-src:/opt/spark/work-dir
+      - ./src:/app/src
+      - ./notebooks:/app/notebooks
+      - ./spark-apps:/app/spark-apps
+      - ./spark-data:/app/spark-data
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+      - ./data:/app/data
     networks:
       - spark-network
 
@@ -32,11 +36,15 @@ services:
       - SPARK_WORKER_WEBUI_PORT=8081
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     ports:
-      - "8081:8081"  # Worker Web UI
+      - "8081:8081"  
     volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
-      - synced-src:/opt/spark/work-dir
+      - ./src:/app/src
+      - ./notebooks:/app/notebooks
+      - ./spark-apps:/app/spark-apps
+      - ./spark-data:/app/spark-data
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+      - ./data:/app/data
     depends_on:
       - spark-master
     networks:
@@ -54,11 +62,15 @@ services:
       - SPARK_WORKER_WEBUI_PORT=8081
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     ports:
-      - "8082:8081"  # Worker Web UI
+      - "8082:8081"  
     volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
-      - synced-src:/opt/spark/work-dir
+      - ./src:/app/src
+      - ./notebooks:/app/notebooks
+      - ./spark-apps:/app/spark-apps
+      - ./spark-data:/app/spark-data
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+      - ./data:/app/data
     depends_on:
       - spark-master
     networks:
@@ -76,28 +88,15 @@ services:
     networks:
       - spark-network
     volumes:
-      - synced-src:/app/src
+      - ./src:/app/src
       - ./notebooks:/app/notebooks
-
-  syncthing:
-    image: syncthing/syncthing:latest
-    container_name: syncthing
+      - ./spark-apps:/app/spark-apps
+      - ./spark-data:/app/spark-data
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+      - ./data:/app/data
     restart: unless-stopped
-    ports:
-      - "8384:8384"       # Syncthing Web GUI
-      - "22000:22000"     # Syncthing sync protocol
-      - "21027:21027/udp" # Local discovery
-    volumes:
-      - ./syncthing/config:/var/syncthing/config
-      - synced-src:/var/syncthing/data
-      - ./src:/host-src:ro
-    networks:
-      - spark-network
 
 networks:
   spark-network:
     driver: bridge
-
-volumes:
-  synced-src:
-    driver: local
