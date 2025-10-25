@@ -1,5 +1,5 @@
 up:
-	docker compose up -d --build
+	DOCKER_BUILDKIT=1 docker compose up -d --build
 
 down:
 	docker compose down
