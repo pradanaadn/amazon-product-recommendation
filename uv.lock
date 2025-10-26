@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 resolution-markers = [
     "python_full_version >= '3.14'",
@@ -24,7 +24,7 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.4.10" },
     { name = "kagglehub", specifier = ">=0.3.13" },
     { name = "numpy", specifier = ">=2.3.4" },
-    { name = "pyspark", specifier = ">=4.0.1" },
+    { name = "pyspark", specifier = "==4.0.1" },
 ]
 
 [[package]]
